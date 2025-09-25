@@ -1,0 +1,8 @@
+
+Django==5.2.6
+psycopg2-binary==2.9.10
+djangorestframework==3.16.1
+firebase-admin==6.5.0
+google-api-core==2.19.1
+google-api-python-client==2.137.0
+google-auth==2.32.0

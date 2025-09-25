@@ -1,0 +1,35 @@
+server:
+  port: 7777
+spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  application:
+    name: api-gateway
+  main:
+    web-application-type: reactive
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: ms-admin
+              uri: lb://ms-admin
+              predicates:
+                - Path=/admin/**
+              filters:
+                - RewritePath=/admin/(?<path>.*), /api/$\{path}
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8888/eureka
+  instance:
+    hostname: localhost
