@@ -4,8 +4,8 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from firebase_admin import auth
-from .models import User
-from .serializers import UserSerializer
+from .models import User , Chat , Message
+from .serializers import UserSerializer , ChatSerializer , MessageSerializer
 
 
 # ------------------- CRUD -------------------
@@ -145,3 +145,118 @@ def signin(request):
 
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+from .models import User, Chat, Message
+from .serializers import UserSerializer, ChatSerializer, MessageSerializer
+
+# ------------------- CHAT CRUD -------------------
+
+@api_view(['GET'])
+def getChats(request):
+    chats = Chat.objects.all()
+    serializer = ChatSerializer(chats, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def getChat(request, pk):
+    try:
+        chat = Chat.objects.get(id=pk)
+    except Chat.DoesNotExist:
+        return Response({"error": "Chat not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = ChatSerializer(chat)
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+def addChat(request):
+    serializer = ChatSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT'])
+def updateChat(request, pk):
+    try:
+        chat = Chat.objects.get(id=pk)
+    except Chat.DoesNotExist:
+        return Response({"error": "Chat not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = ChatSerializer(instance=chat, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+def deleteChat(request, pk):
+    try:
+        chat = Chat.objects.get(id=pk)
+    except Chat.DoesNotExist:
+        return Response({"error": "Chat not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    chat.delete()
+    return Response({"message": "Chat successfully deleted!"}, status=status.HTTP_200_OK)
+
+
+# ------------------- MESSAGE CRUD -------------------
+
+@api_view(['GET'])
+def getMessages(request, chat_id=None):
+    """ If chat_id is provided, get only messages from that chat """
+    if chat_id:
+        messages = Message.objects.filter(chat_id=chat_id)
+    else:
+        messages = Message.objects.all()
+
+    serializer = MessageSerializer(messages, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def getMessage(request, pk):
+    try:
+        message = Message.objects.get(id=pk)
+    except Message.DoesNotExist:
+        return Response({"error": "Message not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = MessageSerializer(message)
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+def addMessage(request):
+    serializer = MessageSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT'])
+def updateMessage(request, pk):
+    try:
+        message = Message.objects.get(id=pk)
+    except Message.DoesNotExist:
+        return Response({"error": "Message not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = MessageSerializer(instance=message, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+def deleteMessage(request, pk):
+    try:
+        message = Message.objects.get(id=pk)
+    except Message.DoesNotExist:
+        return Response({"error": "Message not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    message.delete()
+    return Response({"message": "Message successfully deleted!"}, status=status.HTTP_200_OK)
