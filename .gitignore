@@ -1,0 +1,4 @@
+# Firebase / service account
+ms_user/ms_user/serviceAccountKey.json
+ms_user/.env
+gateway-api/src/main/resources/serviceAccountKey.json

@@ -1,0 +1,36 @@
+server:
+  port: 7777
+
+spring:
+  application:
+    name: api-gateway
+  main:
+    web-application-type: reactive
+  cloud:
+    gateway:
+      server:
+        webflux:
+          filter:
+            json-to-grpc:
+              enabled: false
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: ms-user
+          uri: lb://ms-user
+          predicates:
+            - Path=/ms-user/**
+          filters:
+            - RewritePath=/ms-user/(?<path>.*), /${path}
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8888/eureka
+  instance:
+    prefer-ip-address: true
+    hostname: 172.20.10.3   # replace with your machine's LAN IP
