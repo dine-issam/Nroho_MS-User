@@ -1,9 +1,9 @@
 from py_eureka_client import eureka_client
 
-EUREKA_SERVER = "http://172.20.10.3:8888/eureka"  # use LAN instead of localhost
+EUREKA_SERVER = "http://eureka-server:8888/eureka"
 APP_NAME = "ms-user"
 INSTANCE_PORT = 8000
-INSTANCE_HOST = "172.20.10.3"  # force LAN IP
+INSTANCE_HOST = "ms-user" 
 
 eureka_client.init(
     eureka_server=EUREKA_SERVER,

@@ -1,0 +1,14 @@
+# Use a lightweight OpenJDK 21 image
+FROM openjdk:21-jdk-slim
+
+# Set working directory inside the container
+WORKDIR /app
+
+# Copy the JAR file from your local target folder to the container
+COPY target/eureka*.jar app.jar
+
+# Expose the port Eureka runs on
+EXPOSE 8888
+
+# Command to run your Spring Boot app
+ENTRYPOINT ["java", "-jar", "app.jar"]

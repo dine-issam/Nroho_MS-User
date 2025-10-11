@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  eureka-server:
+    build: ./eureka
+    container_name: eureka-server
+    ports:
+      - "8888:8888"
+    networks:
+      - micro-net
+
+  api-gateway:
+    build: ./gateway-api
+    container_name: api-gateway
+    ports:
+      - "7777:7777"
+    depends_on:
+      - eureka-server
+    environment:
+      - EUREKA_SERVER=http://eureka-server:8888/eureka
+    networks:
+      - micro-net
+
+  ms-user:
+    build: ./ms_user
+    container_name: ms-user
+    ports:
+      - "8000:8000"
+    depends_on:
+      - eureka-server
+      - my-postgres
+    environment:
+      - DATABASE_HOST=my-postgres
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=mydb
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=yourpassword
+      - EUREKA_SERVER=http://eureka-server:8888/eureka
+    networks:
+      - micro-net
+
+  my-postgres:
+    image: postgres:14.18-bookworm
+    container_name: my-postgres
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yourpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - micro-net
+
+networks:
+  micro-net:
+    driver: bridge
+
+volumes:
+  pgdata:

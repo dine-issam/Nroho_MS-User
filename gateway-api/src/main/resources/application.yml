@@ -30,7 +30,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://localhost:8888/eureka
+      defaultZone: http://eureka-server:8888/eureka
   instance:
     prefer-ip-address: true
-    hostname: 172.20.10.3   # replace with your machine's LAN IP
+    hostname: api-gateway   # replace with your machine's LAN IP

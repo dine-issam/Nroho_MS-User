@@ -1,0 +1,14 @@
+# Use a lightweight OpenJDK 21 image
+FROM openjdk:21-jdk-slim
+
+# Set working directory inside the container
+WORKDIR /app
+
+# Copy the JAR file from your local target folder to the container
+COPY target/gateway-api-*.jar app.jar
+
+# Expose the port API Gateway runs on
+EXPOSE 7777
+
+# Command to run your Spring Boot app
+ENTRYPOINT ["java", "-jar", "app.jar"]
